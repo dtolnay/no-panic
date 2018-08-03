@@ -1,0 +1,17 @@
+[package]
+name = "no-panic"
+version = "0.0.0"
+authors = ["David Tolnay <dtolnay@gmail.com>"]
+license = "MIT/Apache-2.0"
+description = "Attribute macro to require that the compiler prove a function can't ever panic."
+repository = "https://github.com/dtolnay/no-panic"
+documentation = "https://github.com/dtolnay/no-panic"
+readme = "README.md"
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "0.4"
+quote = "0.6"
+syn = { version = "0.14", features = ["full"] }
