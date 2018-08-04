@@ -108,8 +108,10 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
                 if pat.subpat.is_none() {
                     arg_pat.push(quote!(#pat));
                     arg_val.push(pat.ident.clone());
+                    if pat.by_ref.is_none() {
+                        pat.mutability = None;
+                    }
                     pat.by_ref = None;
-                    pat.mutability = None;
                 }
             }
         }

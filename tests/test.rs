@@ -46,11 +46,34 @@ assert_no_panic! {
         }
     }
 
+    mod test_ref_argument {
+        #[no_panic]
+        fn demo(ref i: i32) -> i32 {
+            *i
+        }
+
+        fn main() {
+            println!("{}", demo(0));
+        }
+    }
+
     mod test_mut_argument {
         #[no_panic]
         fn demo(mut i: i32) -> i32 {
             i += 1;
             i
+        }
+
+        fn main() {
+            println!("{}", demo(0));
+        }
+    }
+
+    mod test_ref_mut_argument {
+        #[no_panic]
+        fn demo(ref mut i: i32) -> i32 {
+            *i += 1;
+            *i
         }
 
         fn main() {
