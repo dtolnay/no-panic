@@ -12,6 +12,21 @@ assert_no_panic! {
             println!("{}", demo("input string"));
         }
     }
+
+    mod test_method_in_impl {
+        struct S;
+
+        impl S {
+            #[no_panic]
+            fn demo(self) -> &'static str {
+                "test"
+            }
+        }
+
+        fn main() {
+            println!("{}", S.demo());
+        }
+    }
 }
 
 assert_link_error! {
