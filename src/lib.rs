@@ -87,7 +87,7 @@ extern crate proc_macro2;
 
 use proc_macro::TokenStream;
 use proc_macro2::Span;
-use syn::{FnArg, Ident, ItemFn, Pat};
+use syn::{Attribute, FnArg, Ident, ItemFn, Pat};
 
 fn mangled_marker_name(original: &Ident) -> String {
     let len = original.to_string().len();
@@ -115,6 +115,15 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
                 }
             }
         }
+    }
+
+    let has_inline = function
+        .attrs
+        .iter()
+        .filter_map(Attribute::interpret_meta)
+        .any(|meta| meta.name() == "inline");
+    if !has_inline {
+        function.attrs.push(parse_quote!(#[inline]));
     }
 
     let body = function.block;
