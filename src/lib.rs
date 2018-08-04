@@ -107,7 +107,7 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
             }
         }
         let __guard = __NoPanic;
-        let __result = #body;
+        let __result = (move || #body)();
         core::mem::forget(__guard);
         __result
     }));
