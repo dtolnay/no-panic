@@ -18,6 +18,10 @@
 //! }
 //!
 //! fn main() {
+//!     # fn demo(s: &str) -> &str {
+//!     #     &s[1..]
+//!     # }
+//!     #
 //!     println!("{}", demo("input string"));
 //! }
 //! ```
@@ -27,7 +31,11 @@
 //! the function name. Let's trigger that by passing a string that cannot be sliced
 //! at the first byte:
 //!
-//! ```rust
+//! ```rust,should_panic
+//! # fn demo(s: &str) -> &str {
+//! #     &s[1..]
+//! # }
+//! #
 //! fn main() {
 //!     println!("{}", demo("\u{1f980}input string"));
 //! }
