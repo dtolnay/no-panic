@@ -45,6 +45,18 @@ assert_no_panic! {
             println!("{:?}", demo(&mut buffer));
         }
     }
+
+    mod test_mut_argument {
+        #[no_panic]
+        fn demo(mut i: i32) -> i32 {
+            i += 1;
+            i
+        }
+
+        fn main() {
+            println!("{}", demo(0));
+        }
+    }
 }
 
 assert_link_error! {
