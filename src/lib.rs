@@ -87,11 +87,23 @@ extern crate proc_macro2;
 
 use proc_macro::TokenStream;
 use proc_macro2::Span;
-use syn::{Ident, ItemFn};
+use syn::{FnArg, FnDecl, Ident, ItemFn, Pat};
 
 fn mangled_marker_name(original: &Ident) -> String {
     let len = original.to_string().len();
     format!("_Z22RUST_PANIC_IN_FUNCTIONI{}{}E", len, original)
+}
+
+fn captured_args(decl: &FnDecl) -> impl Iterator<Item = &Ident> {
+    decl.inputs
+        .iter()
+        .filter_map(|input| match input {
+            FnArg::Captured(captured) => Some(&captured.pat),
+            _ => None,
+        }).filter_map(|pat| match pat {
+            Pat::Ident(pat) => Some(&pat.ident),
+            _ => None,
+        })
 }
 
 #[proc_macro_attribute]
@@ -100,6 +112,8 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
 
     let mut function: ItemFn = syn::parse(function).unwrap();
     let ident = Ident::new(&mangled_marker_name(&function.ident), Span::call_site());
+    let arg_pat = captured_args(&function.decl);
+    let arg_value = captured_args(&function.decl);
     let body = function.block;
     function.block = Box::new(parse_quote!({
         extern crate core;
@@ -115,7 +129,12 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
             }
         }
         let __guard = __NoPanic;
-        let __result = (move || #body)();
+        let __result = (move || {
+            #(
+                let #arg_pat = #arg_value;
+            )*
+            #body
+        })();
         core::mem::forget(__guard);
         __result
     }));

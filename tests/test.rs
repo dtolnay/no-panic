@@ -27,6 +27,24 @@ assert_no_panic! {
             println!("{}", S.demo());
         }
     }
+
+    mod test_lifetime_elision {
+        struct Buffer {
+            bytes: [u8; 24],
+        }
+
+        #[no_panic]
+        fn demo(buffer: &mut Buffer) -> &[u8] {
+            &buffer.bytes[..]
+        }
+
+        fn main() {
+            let mut buffer = Buffer {
+                bytes: [0u8; 24],
+            };
+            println!("{:?}", demo(&mut buffer));
+        }
+    }
 }
 
 assert_link_error! {
