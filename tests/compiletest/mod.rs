@@ -22,7 +22,6 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
     let tempdir = tempfile::tempdir().unwrap();
 
     let prelude = stringify! {
-        #![feature(use_extern_macros)]
         extern crate no_panic;
         use no_panic::no_panic;
     };

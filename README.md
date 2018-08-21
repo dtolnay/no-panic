@@ -13,8 +13,6 @@ no-panic = "0.1"
 ```
 
 ```rust
-#![feature(use_extern_macros)]
-
 extern crate no_panic;
 use no_panic::no_panic;
 
