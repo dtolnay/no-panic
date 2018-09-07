@@ -96,7 +96,7 @@ fn mangled_marker_name(original: &Ident) -> String {
 pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
     assert!(args.is_empty());
 
-    let mut function: ItemFn = syn::parse(function).unwrap();
+    let mut function = parse_macro_input!(function as ItemFn);
 
     let mut arg_pat = Vec::new();
     let mut arg_val = Vec::new();
