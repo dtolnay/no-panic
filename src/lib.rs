@@ -85,11 +85,33 @@ extern crate proc_macro2;
 
 use proc_macro::TokenStream;
 use proc_macro2::Span;
-use syn::{Attribute, FnArg, Ident, ItemFn, Pat};
+use syn::visit_mut::VisitMut;
+use syn::{
+    ArgCaptured, ArgSelfRef, Attribute, ExprPath, FnArg, Ident, Item, ItemFn, Pat, PatIdent,
+};
 
 fn mangled_marker_name(original: &Ident) -> String {
     let len = original.to_string().len();
     format!("_Z22RUST_PANIC_IN_FUNCTIONI{}{}E", len, original)
+}
+
+struct ReplaceSelf;
+
+impl VisitMut for ReplaceSelf {
+    fn visit_expr_path_mut(&mut self, i: &mut ExprPath) {
+        if i.qself.is_none()
+            && i.path.leading_colon.is_none()
+            && i.path.segments.len() == 1
+            && i.path.segments[0].ident == "self"
+            && i.path.segments[0].arguments.is_empty()
+        {
+            i.path.segments[0].ident = Ident::new("__self", Span::call_site());
+        }
+    }
+
+    fn visit_item_mut(&mut self, _i: &mut Item) {
+        /* do nothing, as `self` now means something else */
+    }
 }
 
 #[proc_macro_attribute]
@@ -101,17 +123,29 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
     let mut arg_pat = Vec::new();
     let mut arg_val = Vec::new();
     for input in &mut function.decl.inputs {
-        if let FnArg::Captured(captured) = input {
-            if let Pat::Ident(pat) = &mut captured.pat {
-                if pat.subpat.is_none() {
-                    arg_pat.push(quote!(#pat));
-                    arg_val.push(pat.ident.clone());
-                    if pat.by_ref.is_none() {
-                        pat.mutability = None;
-                    }
-                    pat.by_ref = None;
+        match input {
+            FnArg::Captured(ArgCaptured {
+                pat: Pat::Ident(pat @ PatIdent { subpat: None, .. }),
+                ..
+            }) => {
+                let ident = &pat.ident;
+                arg_pat.push(quote!(#pat));
+                arg_val.push(quote!(#ident));
+                if pat.by_ref.is_none() {
+                    pat.mutability = None;
                 }
+                pat.by_ref = None;
             }
+            FnArg::SelfRef(ArgSelfRef {
+                mutability: Some(_),
+                self_token,
+                ..
+            }) => {
+                arg_pat.push(quote!(__self));
+                arg_val.push(quote!(#self_token));
+                ReplaceSelf.visit_block_mut(&mut function.block);
+            }
+            _ => {}
         }
     }
 

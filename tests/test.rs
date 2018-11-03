@@ -80,6 +80,24 @@ assert_no_panic! {
             println!("{}", demo(0));
         }
     }
+
+    mod test_borrow_from_mut_self {
+        struct S {
+            data: usize,
+        }
+
+        impl S {
+            #[no_panic]
+            fn get_mut(&mut self) -> &mut usize {
+                &mut self.data
+            }
+        }
+
+        fn main() {
+            let mut s = S { data: 0 };
+            println!("{}", s.get_mut());
+        }
+    }
 }
 
 assert_link_error! {

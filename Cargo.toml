@@ -14,7 +14,7 @@ proc-macro = true
 [dependencies]
 proc-macro2 = "0.4"
 quote = "0.6"
-syn = { version = "0.15", features = ["full"] }
+syn = { version = "0.15", features = ["full", "visit-mut"] }
 
 [dev-dependencies]
 tempfile = "3.0"
