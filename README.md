@@ -64,6 +64,16 @@ name of the offending function: ```undefined reference to
 
 - The attribute is useless in code built with `panic = "abort"`.
 
+If you find that code requires optimization to pass `#[no_panic]`, either make
+no-panic an optional dependency that you only enable in release builds, or add a
+section like the following to Cargo.toml to enable very basic optimization in
+debug builds.
+
+```toml
+[profile.dev]
+opt-level = 1
+```
+
 ## Acknowledgments
 
 The linker error technique is based on [**@Kixunil**]'s crate [`dont_panic`].
