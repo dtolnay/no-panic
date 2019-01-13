@@ -1,5 +1,5 @@
-//! A Rust attribute macro to require that the compiler prove a function can't ever
-//! panic.
+//! A Rust attribute macro to require that the compiler prove a function can't
+//! ever panic.
 //!
 //! ```toml
 //! [dependencies]
@@ -25,9 +25,9 @@
 //! ```
 //!
 //! If the function does panic (or the compiler fails to prove that the function
-//! cannot panic), the program fails to compile with a linker error that identifies
-//! the function name. Let's trigger that by passing a string that cannot be sliced
-//! at the first byte:
+//! cannot panic), the program fails to compile with a linker error that
+//! identifies the function name. Let's trigger that by passing a string that
+//! cannot be sliced at the first byte:
 //!
 //! ```rust,should_panic
 //! # fn demo(s: &str) -> &str {
@@ -53,16 +53,17 @@
 //!           collect2: error: ld returned 1 exit status
 //! ```
 //!
-//! The error is not stellar but notice the useful part at the end that provides the
-//! name of the offending function: ```undefined reference to
+//! The error is not stellar but notice the useful part at the end that provides
+//! the name of the offending function: ```undefined reference to
 //! `RUST_PANIC_IN_FUNCTION<demo>'```
 //!
 //! *Requires rustc \>=1.30.0.*
 //!
 //! ## Caveats
 //!
-//! - Functions that require some amount of optimization to prove that they do not
-//!   panic may no longer compile in debug mode after being marked `#[no_panic]`.
+//! - Functions that require some amount of optimization to prove that they do
+//!   not panic may no longer compile in debug mode after being marked
+//!   `#[no_panic]`.
 //!
 //! - The attribute is useless in code built with `panic = "abort"`.
 //!
@@ -78,8 +79,9 @@
 //!
 //! ## Acknowledgments
 //!
-//! The linker error technique is based on [**@Kixunil**]'s crate [`dont_panic`].
-//! Check out that crate for other convenient ways to require absence of panics.
+//! The linker error technique is based on [**@Kixunil**]'s crate
+//! [`dont_panic`]. Check out that crate for other convenient ways to require
+//! absence of panics.
 //!
 //! [**@Kixunil**]: https://github.com/Kixunil
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
