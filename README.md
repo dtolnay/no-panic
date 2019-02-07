@@ -62,6 +62,11 @@ name of the offending function: ```undefined reference to
 - Functions that require some amount of optimization to prove that they do not
   panic may no longer compile in debug mode after being marked `#[no_panic]`.
 
+- Panic detection happens at link time across the entire dependency graph, so
+  any Cargo commands that do not invoke a linker will not trigger panic
+  detection. This includes `cargo build` of library crates and `cargo check` of
+  binary and library crates.
+
 - The attribute is useless in code built with `panic = "abort"`.
 
 If you find that code requires optimization to pass `#[no_panic]`, either make
