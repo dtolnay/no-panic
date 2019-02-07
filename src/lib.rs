@@ -117,13 +117,18 @@ impl VisitMut for ReplaceSelf {
     }
 
     fn visit_macro_mut(&mut self, i: &mut Macro) {
+        // We can't tell in general whether `self` inside a macro invocation
+        // refers to the self in the argument list or a different self
+        // introduced within the macro. Heuristic: if the macro input contains
+        // `fn`, then `self` is more likely to refer to something other than the
+        // outer function's self argument.
         if !contains_fn(i.tts.clone()) {
             i.tts = fold_token_stream(i.tts.clone());
         }
     }
 
     fn visit_item_mut(&mut self, _i: &mut Item) {
-        /* do nothing, as `self` now means something else */
+        // Do nothing, as `self` now means something else.
     }
 }
 
