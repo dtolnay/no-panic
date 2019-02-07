@@ -1,20 +1,17 @@
 extern crate tempfile;
 
 use std::fs;
-use std::path::Path;
 use std::process::Command;
 use std::sync::Once;
 
 pub fn setup() {
     static BUILD: Once = Once::new();
     BUILD.call_once(|| {
-        if !Path::new("target/debug/libno_panic.so").exists() {
-            let status = Command::new("cargo")
-                .arg("build")
-                .status()
-                .expect("failed to build");
-            assert!(status.success());
-        }
+        let status = Command::new("cargo")
+            .arg("build")
+            .status()
+            .expect("failed to build");
+        assert!(status.success());
     });
 }
 
