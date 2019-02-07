@@ -2,6 +2,9 @@ language: rust
 
 rust:
   - nightly
+  - beta
+  - stable
+  - 1.30.0
 
 script:
   - cargo test
