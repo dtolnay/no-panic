@@ -117,12 +117,22 @@ impl VisitMut for ReplaceSelf {
     }
 
     fn visit_macro_mut(&mut self, i: &mut Macro) {
-        i.tts = fold_token_stream(i.tts.clone());
+        if !contains_fn(i.tts.clone()) {
+            i.tts = fold_token_stream(i.tts.clone());
+        }
     }
 
     fn visit_item_mut(&mut self, _i: &mut Item) {
         /* do nothing, as `self` now means something else */
     }
+}
+
+fn contains_fn(tts: TokenStream2) -> bool {
+    tts.into_iter().any(|tt| match tt {
+        TokenTree::Ident(ident) => ident == "fn",
+        TokenTree::Group(group) => contains_fn(group.stream()),
+        _ => false,
+    })
 }
 
 fn fold_token_stream(tts: TokenStream2) -> TokenStream2 {

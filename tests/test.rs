@@ -116,6 +116,35 @@ assert_no_panic! {
             println!("{}", s.get_mut()[0]);
         }
     }
+
+    mod test_self_in_macro_containing_fn {
+        pub struct S {
+            data: usize,
+        }
+
+        macro_rules! emit {
+            ($($tt:tt)*) => {
+                $($tt)*
+            };
+        }
+
+        impl S {
+            #[no_panic]
+            fn get_mut(&mut self) -> usize {
+                let _ = emit!({
+                    impl S {
+                        pub fn f(self) {}
+                    }
+                });
+                self.data
+            }
+        }
+
+        fn main() {
+            let mut s = S { data: 0 };
+            println!("{}", s.get_mut());
+        }
+    }
 }
 
 assert_link_error! {
