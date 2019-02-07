@@ -98,6 +98,24 @@ assert_no_panic! {
             println!("{}", s.get_mut());
         }
     }
+
+    mod test_self_in_vec {
+        struct S {
+            data: usize,
+        }
+
+        impl S {
+            #[no_panic]
+            fn get_mut(&mut self) -> Vec<usize> {
+                vec![self.data]
+            }
+        }
+
+        fn main() {
+            let mut s = S { data: 0 };
+            println!("{}", s.get_mut()[0]);
+        }
+    }
 }
 
 assert_link_error! {

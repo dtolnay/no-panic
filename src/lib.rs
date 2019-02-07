@@ -96,10 +96,10 @@ extern crate proc_macro;
 extern crate proc_macro2;
 
 use proc_macro::TokenStream;
-use proc_macro2::Span;
+use proc_macro2::{Group, Span, TokenStream as TokenStream2, TokenTree};
 use syn::visit_mut::VisitMut;
 use syn::{
-    ArgCaptured, ArgSelfRef, Attribute, ExprPath, FnArg, Ident, Item, ItemFn, Pat, PatIdent,
+    ArgCaptured, ArgSelfRef, Attribute, ExprPath, FnArg, Ident, Item, ItemFn, Macro, Pat, PatIdent,
 };
 
 fn mangled_marker_name(original: &Ident) -> String {
@@ -112,12 +112,38 @@ struct ReplaceSelf;
 impl VisitMut for ReplaceSelf {
     fn visit_expr_path_mut(&mut self, i: &mut ExprPath) {
         if i.qself.is_none() && i.path.is_ident("self") {
-            i.path.segments[0].ident = Ident::new("__self", Span::call_site());
+            prepend_underscores_to_self(&mut i.path.segments[0].ident);
         }
+    }
+
+    fn visit_macro_mut(&mut self, i: &mut Macro) {
+        i.tts = fold_token_stream(i.tts.clone());
     }
 
     fn visit_item_mut(&mut self, _i: &mut Item) {
         /* do nothing, as `self` now means something else */
+    }
+}
+
+fn fold_token_stream(tts: TokenStream2) -> TokenStream2 {
+    tts.into_iter()
+        .map(|tt| match tt {
+            TokenTree::Ident(mut ident) => {
+                prepend_underscores_to_self(&mut ident);
+                TokenTree::Ident(ident)
+            }
+            TokenTree::Group(group) => {
+                let content = fold_token_stream(group.stream());
+                TokenTree::Group(Group::new(group.delimiter(), content))
+            }
+            other => other,
+        })
+        .collect()
+}
+
+fn prepend_underscores_to_self(ident: &mut Ident) {
+    if ident == "self" {
+        *ident = Ident::new("__self", Span::call_site());
     }
 }
 
