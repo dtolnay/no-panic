@@ -111,12 +111,7 @@ struct ReplaceSelf;
 
 impl VisitMut for ReplaceSelf {
     fn visit_expr_path_mut(&mut self, i: &mut ExprPath) {
-        if i.qself.is_none()
-            && i.path.leading_colon.is_none()
-            && i.path.segments.len() == 1
-            && i.path.segments[0].ident == "self"
-            && i.path.segments[0].arguments.is_empty()
-        {
+        if i.qself.is_none() && i.path.is_ident("self") {
             i.path.segments[0].ident = Ident::new("__self", Span::call_site());
         }
     }
