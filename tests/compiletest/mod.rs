@@ -1,5 +1,3 @@
-extern crate tempfile;
-
 use std::fs;
 use std::process::Command;
 use std::sync::Once;
@@ -19,7 +17,6 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
     let tempdir = tempfile::tempdir().unwrap();
 
     let prelude = stringify! {
-        extern crate no_panic;
         use no_panic::no_panic;
     };
 
@@ -30,6 +27,7 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
         .arg("--crate-name")
         .arg(name)
         .arg(rs)
+        .arg("--edition=2018")
         .arg("-C")
         .arg("opt-level=3")
         .arg("--emit=asm")
@@ -49,7 +47,7 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
 macro_rules! assert_no_panic {
     ($(mod $name:ident { $($content:tt)* })*) => {
         mod no_panic {
-            use compiletest;
+            use crate::compiletest;
             $(
                 #[test]
                 fn $name() {
@@ -66,7 +64,7 @@ macro_rules! assert_no_panic {
 macro_rules! assert_link_error {
     ($(mod $name:ident { $($content:tt)* })*) => {
         mod link_error {
-            use compiletest;
+            use crate::compiletest;
             $(
                 #[test]
                 fn $name() {

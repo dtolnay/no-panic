@@ -7,7 +7,6 @@
 //! ```
 //!
 //! ```rust
-//! extern crate no_panic;
 //! use no_panic::no_panic;
 //!
 //! #[no_panic]
@@ -91,20 +90,15 @@
 //! [**@Kixunil**]: https://github.com/Kixunil
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
-#[macro_use]
-extern crate quote;
-
-#[macro_use]
-extern crate syn;
-
 extern crate proc_macro;
-extern crate proc_macro2;
 
 use proc_macro::TokenStream;
 use proc_macro2::{Group, Span, TokenStream as TokenStream2, TokenTree};
+use quote::quote;
 use syn::visit_mut::VisitMut;
 use syn::{
-    ArgCaptured, ArgSelfRef, Attribute, ExprPath, FnArg, Ident, Item, ItemFn, Macro, Pat, PatIdent,
+    parse_macro_input, parse_quote, ArgCaptured, ArgSelfRef, Attribute, ExprPath, FnArg, Ident,
+    Item, ItemFn, Macro, Pat, PatIdent,
 };
 
 fn mangled_marker_name(original: &Ident) -> String {
@@ -214,7 +208,6 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
     let body = function.block;
     let ident = Ident::new(&mangled_marker_name(&function.ident), Span::call_site());
     function.block = Box::new(parse_quote!({
-        extern crate core;
         struct __NoPanic;
         extern "C" {
             fn #ident() -> !;
