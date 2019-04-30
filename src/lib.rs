@@ -6,7 +6,7 @@
 //! no-panic = "0.1"
 //! ```
 //!
-//! ```rust
+//! ```
 //! use no_panic::no_panic;
 //!
 //! #[no_panic]
@@ -28,7 +28,7 @@
 //! identifies the function name. Let's trigger that by passing a string that
 //! cannot be sliced at the first byte:
 //!
-//! ```rust,should_panic
+//! ```should_panic
 //! # fn demo(s: &str) -> &str {
 //! #     &s[1..]
 //! # }
