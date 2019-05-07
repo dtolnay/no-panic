@@ -101,11 +101,6 @@ use syn::{
     Item, ItemFn, Macro, Pat, PatIdent,
 };
 
-fn mangled_marker_name(original: &Ident) -> String {
-    let len = original.to_string().len();
-    format!("_Z22RUST_PANIC_IN_FUNCTIONI{}{}E", len, original)
-}
-
 struct ReplaceSelf;
 
 impl VisitMut for ReplaceSelf {
@@ -206,16 +201,20 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
     }
 
     let body = function.block;
-    let ident = Ident::new(&mangled_marker_name(&function.ident), Span::call_site());
+    let message = format!(
+        "\n\nERROR[no-panic]: detected panic in function `{}`\n",
+        function.ident,
+    );
     function.block = Box::new(parse_quote!({
         struct __NoPanic;
         extern "C" {
-            fn #ident() -> !;
+            #[link_name = #message]
+            fn trigger() -> !;
         }
         impl core::ops::Drop for __NoPanic {
             fn drop(&mut self) {
                 unsafe {
-                    #ident();
+                    trigger();
                 }
             }
         }
