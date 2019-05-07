@@ -46,13 +46,15 @@ c_demo..demo..__NoPanic$u20$as$u20$core..ops..drop..Drop$GT$::drop::h72f8f423002
 b8d9f':
           no_panic_demo1-cba7f4b666ccdbcbbf02b7348e5df1b2.rs:(.text._ZN72_$LT$no
 _panic_demo..demo..__NoPanic$u20$as$u20$core..ops..drop..Drop$GT$4drop17h72f8f42
-3002b8d9fE+0x2): undefined reference to `RUST_PANIC_IN_FUNCTION<demo>'
+3002b8d9fE+0x2): undefined reference to `
+
+          ERROR[no-panic]: detected panic in function `demo`
+          '
           collect2: error: ld returned 1 exit status
 ```
 
-The error is not stellar but notice the useful part at the end that provides the
-name of the offending function: ```undefined reference to
-`RUST_PANIC_IN_FUNCTION<demo>'```
+The error is not stellar but notice the ERROR\[no-panic\] part at the end that
+provides the name of the offending function.
 
 *Requires rustc \>=1.30.0.*
 
