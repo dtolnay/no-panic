@@ -58,7 +58,7 @@
 //! The error is not stellar but notice the ERROR\[no-panic\] part at the end
 //! that provides the name of the offending function.
 //!
-//! *Requires rustc \>=1.30.0.*
+//! *Compiler support: requires rustc 1.31+*
 //!
 //! ## Caveats
 //!
