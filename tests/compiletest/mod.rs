@@ -41,7 +41,7 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
 
     let asm = tempdir.path().join(format!("{}.s", name));
     let asm = fs::read_to_string(asm).unwrap();
-    asm.contains("RUST_PANIC_IN_FUNCTION")
+    asm.contains("detected panic in function")
 }
 
 macro_rules! assert_no_panic {
