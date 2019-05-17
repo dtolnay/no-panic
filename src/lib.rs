@@ -99,8 +99,8 @@ use proc_macro2::{Group, Span, TokenStream as TokenStream2, TokenTree};
 use quote::quote;
 use syn::visit_mut::VisitMut;
 use syn::{
-    parse_macro_input, parse_quote, ArgCaptured, ArgSelfRef, Attribute, ExprPath, FnArg, Ident,
-    Item, ItemFn, Macro, Pat, PatIdent,
+    parse_macro_input, parse_quote, ArgCaptured, ArgSelf, ArgSelfRef, Attribute, ExprPath, FnArg,
+    Ident, Item, ItemFn, Macro, ReturnType,
 };
 
 struct ReplaceSelf;
@@ -164,29 +164,59 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
 
     let mut function = parse_macro_input!(function as ItemFn);
 
-    let mut arg_pat = Vec::new();
-    let mut arg_val = Vec::new();
-    for input in &mut function.decl.inputs {
+    let mut arg_ty = proc_macro2::TokenStream::new();
+    let mut arg_pat = proc_macro2::TokenStream::new();
+    let mut arg_val = proc_macro2::TokenStream::new();
+    for (i, input) in function.decl.inputs.iter_mut().enumerate() {
+        let numbered = Ident::new(&format!("__arg{}", i), Span::call_site());
         match input {
             FnArg::Captured(ArgCaptured {
-                pat: Pat::Ident(pat @ PatIdent { subpat: None, .. }),
-                ..
+                pat,
+                colon_token,
+                ty,
             }) => {
-                let ident = &pat.ident;
-                arg_pat.push(quote!(#pat));
-                arg_val.push(quote!(#ident));
-                if pat.by_ref.is_none() {
-                    pat.mutability = None;
-                }
-                pat.by_ref = None;
+                arg_ty.extend(quote! {
+                    #ty,
+                });
+                arg_pat.extend(quote! {
+                    #pat #colon_token #ty,
+                });
+                arg_val.extend(quote! {
+                    #numbered,
+                });
+                *pat = parse_quote!(#numbered);
             }
             FnArg::SelfRef(ArgSelfRef {
-                mutability: Some(_),
+                and_token,
+                lifetime,
+                mutability,
                 self_token,
-                ..
             }) => {
-                arg_pat.push(quote!(__self));
-                arg_val.push(quote!(#self_token));
+                arg_ty.extend(quote! {
+                    #and_token #lifetime #mutability Self,
+                });
+                arg_pat.extend(quote! {
+                    __self: #and_token #lifetime #mutability Self,
+                });
+                arg_val.extend(quote! {
+                    #self_token,
+                });
+                ReplaceSelf.visit_block_mut(&mut function.block);
+            }
+            FnArg::SelfValue(ArgSelf {
+                mutability,
+                self_token,
+            }) => {
+                arg_ty.extend(quote! {
+                    Self,
+                });
+                arg_pat.extend(quote! {
+                    #mutability __self: Self,
+                });
+                arg_val.extend(quote! {
+                    #self_token,
+                });
+                *mutability = None;
                 ReplaceSelf.visit_block_mut(&mut function.block);
             }
             _ => {}
@@ -202,6 +232,10 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
         function.attrs.push(parse_quote!(#[inline]));
     }
 
+    let ret = match &function.decl.output {
+        ReturnType::Default => quote!(-> ()),
+        output @ ReturnType::Type(..) => quote!(#output),
+    };
     let body = function.block;
     let message = format!(
         "\n\nERROR[no-panic]: detected panic in function `{}`\n",
@@ -221,12 +255,7 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
             }
         }
         let __guard = __NoPanic;
-        let __result = (move || {
-            #(
-                let #arg_pat = #arg_val;
-            )*
-            #body
-        })();
+        let __result = (|#arg_pat| #ret #body as fn(#arg_ty) #ret)(#arg_val);
         core::mem::forget(__guard);
         __result
     }));
