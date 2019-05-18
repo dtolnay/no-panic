@@ -58,7 +58,9 @@ provides the name of the offending function.
 
 *Compiler support: requires rustc 1.31+*
 
-## Caveats
+<br>
+
+### Caveats
 
 - Functions that require some amount of optimization to prove that they do not
   panic may no longer compile in debug mode after being marked `#[no_panic]`.
@@ -80,7 +82,9 @@ debug builds.
 opt-level = 1
 ```
 
-## Acknowledgments
+<br>
+
+### Acknowledgments
 
 The linker error technique is based on [Kixunil]'s crate [`dont_panic`]. Check
 out that crate for other convenient ways to require absence of panics.

@@ -60,6 +60,8 @@
 //!
 //! *Compiler support: requires rustc 1.31+*
 //!
+//! <br>
+//!
 //! ## Caveats
 //!
 //! - Functions that require some amount of optimization to prove that they do
@@ -82,6 +84,8 @@
 //! [profile.dev]
 //! opt-level = 1
 //! ```
+//!
+//! <br>
 //!
 //! ## Acknowledgments
 //!
