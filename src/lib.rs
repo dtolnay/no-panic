@@ -85,11 +85,10 @@
 //!
 //! ## Acknowledgments
 //!
-//! The linker error technique is based on [**@Kixunil**]'s crate
-//! [`dont_panic`]. Check out that crate for other convenient ways to require
-//! absence of panics.
+//! The linker error technique is based on [Kixunil]'s crate [`dont_panic`].
+//! Check out that crate for other convenient ways to require absence of panics.
 //!
-//! [**@Kixunil**]: https://github.com/Kixunil
+//! [Kixunil]: https://github.com/Kixunil
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
 extern crate proc_macro;
