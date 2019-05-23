@@ -46,6 +46,26 @@ assert_no_panic! {
         }
     }
 
+    mod test_receiver_lifetime_elision {
+        struct Buffer {
+            bytes: [u8; 24],
+        }
+
+        impl Buffer {
+            #[no_panic]
+            fn demo(&mut self, _s: &str) -> &[u8] {
+                &self.bytes[..]
+            }
+        }
+
+        fn main() {
+            let mut buffer = Buffer {
+                bytes: [0u8; 24],
+            };
+            println!("{:?}", buffer.demo(""));
+        }
+    }
+
     mod test_ref_argument {
         #[no_panic]
         fn demo(ref i: i32) -> i32 {

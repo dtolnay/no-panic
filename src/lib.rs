@@ -167,58 +167,27 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
 
     let mut function = parse_macro_input!(function as ItemFn);
 
-    let mut arg_ty = proc_macro2::TokenStream::new();
-    let mut arg_pat = proc_macro2::TokenStream::new();
-    let mut arg_val = proc_macro2::TokenStream::new();
+    let mut arg_pat = Vec::new();
+    let mut arg_val = Vec::new();
     for (i, input) in function.decl.inputs.iter_mut().enumerate() {
         let numbered = Ident::new(&format!("__arg{}", i), Span::call_site());
         match input {
-            FnArg::Captured(ArgCaptured {
-                pat,
-                colon_token,
-                ty,
-            }) => {
-                arg_ty.extend(quote! {
-                    #ty,
-                });
-                arg_pat.extend(quote! {
-                    #pat #colon_token #ty,
-                });
-                arg_val.extend(quote! {
-                    #numbered,
-                });
-                *pat = parse_quote!(#numbered);
+            FnArg::Captured(ArgCaptured { pat, .. }) => {
+                arg_pat.push(quote!(#pat));
+                arg_val.push(quote!(#numbered));
+                *pat = parse_quote!(mut #numbered);
             }
-            FnArg::SelfRef(ArgSelfRef {
-                and_token,
-                lifetime,
-                mutability,
-                self_token,
-            }) => {
-                arg_ty.extend(quote! {
-                    #and_token #lifetime #mutability Self,
-                });
-                arg_pat.extend(quote! {
-                    __self: #and_token #lifetime #mutability Self,
-                });
-                arg_val.extend(quote! {
-                    #self_token,
-                });
+            FnArg::SelfRef(ArgSelfRef { self_token, .. }) => {
+                arg_pat.push(quote!(__self));
+                arg_val.push(quote!(#self_token));
                 ReplaceSelf.visit_block_mut(&mut function.block);
             }
             FnArg::SelfValue(ArgSelf {
                 mutability,
                 self_token,
             }) => {
-                arg_ty.extend(quote! {
-                    Self,
-                });
-                arg_pat.extend(quote! {
-                    #mutability __self: Self,
-                });
-                arg_val.extend(quote! {
-                    #self_token,
-                });
+                arg_pat.push(quote!(#mutability __self));
+                arg_val.push(quote!(#self_token));
                 *mutability = None;
                 ReplaceSelf.visit_block_mut(&mut function.block);
             }
@@ -258,7 +227,12 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
             }
         }
         let __guard = __NoPanic;
-        let __result = (|#arg_pat| #ret #body as fn(#arg_ty) #ret)(#arg_val);
+        let __result = (move || #ret {
+            #(
+                let #arg_pat = #arg_val;
+            )*
+            #body
+        })();
         core::mem::forget(__guard);
         __result
     }));
