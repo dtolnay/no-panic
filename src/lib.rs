@@ -102,8 +102,9 @@ use proc_macro2::{Group, Span, TokenStream as TokenStream2, TokenTree};
 use quote::quote;
 use syn::visit_mut::VisitMut;
 use syn::{
-    parse_macro_input, parse_quote, ArgCaptured, ArgSelf, ArgSelfRef, Attribute, ExprPath, FnArg,
+    parse_macro_input, parse_quote, Attribute, ExprPath, FnArg,
     Ident, Item, ItemFn, Macro, ReturnType,
+    PatType,
 };
 
 struct ReplaceSelf;
@@ -121,8 +122,8 @@ impl VisitMut for ReplaceSelf {
         // introduced within the macro. Heuristic: if the macro input contains
         // `fn`, then `self` is more likely to refer to something other than the
         // outer function's self argument.
-        if !contains_fn(i.tts.clone()) {
-            i.tts = fold_token_stream(i.tts.clone());
+        if !contains_fn(i.tokens.clone()) {
+            i.tokens = fold_token_stream(i.tokens.clone());
         }
     }
 
@@ -131,16 +132,16 @@ impl VisitMut for ReplaceSelf {
     }
 }
 
-fn contains_fn(tts: TokenStream2) -> bool {
-    tts.into_iter().any(|tt| match tt {
+fn contains_fn(tokens: TokenStream2) -> bool {
+    tokens.into_iter().any(|tt| match tt {
         TokenTree::Ident(ident) => ident == "fn",
         TokenTree::Group(group) => contains_fn(group.stream()),
         _ => false,
     })
 }
 
-fn fold_token_stream(tts: TokenStream2) -> TokenStream2 {
-    tts.into_iter()
+fn fold_token_stream(tokens: TokenStream2) -> TokenStream2 {
+    tokens.into_iter()
         .map(|tt| match tt {
             TokenTree::Ident(mut ident) => {
                 prepend_underscores_to_self(&mut ident);
@@ -169,49 +170,46 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
 
     let mut arg_pat = Vec::new();
     let mut arg_val = Vec::new();
-    for (i, input) in function.decl.inputs.iter_mut().enumerate() {
+    for (i, input) in function.sig.inputs.iter_mut().enumerate() {
         let numbered = Ident::new(&format!("__arg{}", i), Span::call_site());
         match input {
-            FnArg::Captured(ArgCaptured { pat, .. }) => {
+            FnArg::Typed(PatType { pat, .. }) => {
                 arg_pat.push(quote!(#pat));
                 arg_val.push(quote!(#numbered));
                 *pat = parse_quote!(mut #numbered);
             }
-            FnArg::SelfRef(ArgSelfRef { self_token, .. }) => {
-                arg_pat.push(quote!(__self));
+            FnArg::Receiver(receiver) => {
+                let self_token = receiver.self_token;
                 arg_val.push(quote!(#self_token));
+                if receiver.reference.is_some() {
+                    arg_pat.push(quote!(__self));
+                } else {
+                    let mutability = &mut receiver.mutability;
+                    arg_pat.push(quote!(#mutability __self));
+                    *mutability = None;
+                }
                 ReplaceSelf.visit_block_mut(&mut function.block);
             }
-            FnArg::SelfValue(ArgSelf {
-                mutability,
-                self_token,
-            }) => {
-                arg_pat.push(quote!(#mutability __self));
-                arg_val.push(quote!(#self_token));
-                *mutability = None;
-                ReplaceSelf.visit_block_mut(&mut function.block);
-            }
-            _ => {}
         }
     }
 
     let has_inline = function
         .attrs
         .iter()
-        .filter_map(Attribute::interpret_meta)
-        .any(|meta| meta.name() == "inline");
+        .flat_map(Attribute::parse_meta)
+        .any(|meta| meta.path().is_ident("inline"));
     if !has_inline {
         function.attrs.push(parse_quote!(#[inline]));
     }
 
-    let ret = match &function.decl.output {
+    let ret = match &function.sig.output {
         ReturnType::Default => quote!(-> ()),
         output @ ReturnType::Type(..) => quote!(#output),
     };
     let body = function.block;
     let message = format!(
         "\n\nERROR[no-panic]: detected panic in function `{}`\n",
-        function.ident,
+        function.sig.ident,
     );
     function.block = Box::new(parse_quote!({
         struct __NoPanic;
