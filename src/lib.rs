@@ -98,69 +98,9 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use proc_macro2::{Group, Span, TokenStream as TokenStream2, TokenTree};
+use proc_macro2::Span;
 use quote::quote;
-use syn::visit_mut::VisitMut;
-use syn::{
-    parse_macro_input, parse_quote, Attribute, ExprPath, FnArg, Ident, Item, ItemFn, Macro,
-    PatType, ReturnType,
-};
-
-struct ReplaceSelf;
-
-impl VisitMut for ReplaceSelf {
-    fn visit_expr_path_mut(&mut self, i: &mut ExprPath) {
-        if i.qself.is_none() && i.path.is_ident("self") {
-            prepend_underscores_to_self(&mut i.path.segments[0].ident);
-        }
-    }
-
-    fn visit_macro_mut(&mut self, i: &mut Macro) {
-        // We can't tell in general whether `self` inside a macro invocation
-        // refers to the self in the argument list or a different self
-        // introduced within the macro. Heuristic: if the macro input contains
-        // `fn`, then `self` is more likely to refer to something other than the
-        // outer function's self argument.
-        if !contains_fn(i.tokens.clone()) {
-            i.tokens = fold_token_stream(i.tokens.clone());
-        }
-    }
-
-    fn visit_item_mut(&mut self, _i: &mut Item) {
-        // Do nothing, as `self` now means something else.
-    }
-}
-
-fn contains_fn(tokens: TokenStream2) -> bool {
-    tokens.into_iter().any(|tt| match tt {
-        TokenTree::Ident(ident) => ident == "fn",
-        TokenTree::Group(group) => contains_fn(group.stream()),
-        _ => false,
-    })
-}
-
-fn fold_token_stream(tokens: TokenStream2) -> TokenStream2 {
-    tokens
-        .into_iter()
-        .map(|tt| match tt {
-            TokenTree::Ident(mut ident) => {
-                prepend_underscores_to_self(&mut ident);
-                TokenTree::Ident(ident)
-            }
-            TokenTree::Group(group) => {
-                let content = fold_token_stream(group.stream());
-                TokenTree::Group(Group::new(group.delimiter(), content))
-            }
-            other => other,
-        })
-        .collect()
-}
-
-fn prepend_underscores_to_self(ident: &mut Ident) {
-    if ident == "self" {
-        *ident = Ident::new("__self", Span::call_site());
-    }
-}
+use syn::{parse_macro_input, parse_quote, Attribute, FnArg, Ident, ItemFn, PatType, ReturnType};
 
 #[proc_macro_attribute]
 pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
@@ -168,6 +108,7 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
 
     let mut function = parse_macro_input!(function as ItemFn);
 
+    let mut move_self = None;
     let mut arg_pat = Vec::new();
     let mut arg_val = Vec::new();
     for (i, input) in function.sig.inputs.iter_mut().enumerate() {
@@ -178,17 +119,16 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
                 arg_val.push(quote!(#numbered));
                 *pat = parse_quote!(mut #numbered);
             }
-            FnArg::Receiver(receiver) => {
-                let self_token = receiver.self_token;
-                arg_val.push(quote!(#self_token));
-                if receiver.reference.is_some() {
-                    arg_pat.push(quote!(__self));
-                } else {
-                    let mutability = &mut receiver.mutability;
-                    arg_pat.push(quote!(#mutability __self));
-                    *mutability = None;
-                }
-                ReplaceSelf.visit_block_mut(&mut function.block);
+            FnArg::Receiver(_) => {
+                move_self = Some(quote! {
+                    if false {
+                        loop {}
+                        #[allow(unreachable_code)]
+                        {
+                            let __self = self;
+                        }
+                    }
+                });
             }
         }
     }
@@ -226,6 +166,7 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
         }
         let __guard = __NoPanic;
         let __result = (move || #ret {
+            #move_self
             #(
                 let #arg_pat = #arg_val;
             )*
