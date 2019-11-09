@@ -102,9 +102,8 @@ use proc_macro2::{Group, Span, TokenStream as TokenStream2, TokenTree};
 use quote::quote;
 use syn::visit_mut::VisitMut;
 use syn::{
-    parse_macro_input, parse_quote, Attribute, ExprPath, FnArg,
-    Ident, Item, ItemFn, Macro, ReturnType,
-    PatType,
+    parse_macro_input, parse_quote, Attribute, ExprPath, FnArg, Ident, Item, ItemFn, Macro,
+    PatType, ReturnType,
 };
 
 struct ReplaceSelf;
@@ -141,7 +140,8 @@ fn contains_fn(tokens: TokenStream2) -> bool {
 }
 
 fn fold_token_stream(tokens: TokenStream2) -> TokenStream2 {
-    tokens.into_iter()
+    tokens
+        .into_iter()
         .map(|tt| match tt {
             TokenTree::Ident(mut ident) => {
                 prepend_underscores_to_self(&mut ident);
