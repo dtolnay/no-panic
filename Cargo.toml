@@ -22,3 +22,6 @@ tempfile = "3.0"
 
 [badges]
 travis-ci = { repository = "dtolnay/no-panic" }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
