@@ -82,6 +82,15 @@ debug builds.
 opt-level = 1
 ```
 
+If the code that you need to provide isn't panicking makes function calls to
+non-generic non-inline functions from a different crate, you may need thin LTO
+enabled for the linker to deduce those do not panic.
+
+```toml
+[profile.release]
+lto = "thin"
+```
+
 <br>
 
 ### Acknowledgments
