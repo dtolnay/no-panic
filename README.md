@@ -91,6 +91,12 @@ enabled for the linker to deduce those do not panic.
 lto = "thin"
 ```
 
+If you want no\_panic to just assume that some function you call doesn't panic,
+and get Undefined Behavior if it does at runtime, see [dtolnay/no-panic#16]; try
+wrapping that call in an `unsafe extern "C"` wrapper.
+
+[dtolnay/no-panic#16]: https://github.com/dtolnay/no-panic/issues/16
+
 <br>
 
 ### Acknowledgments
