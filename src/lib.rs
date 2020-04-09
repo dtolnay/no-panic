@@ -146,7 +146,7 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
         ReturnType::Default => quote!(-> ()),
         output @ ReturnType::Type(..) => quote!(#output),
     };
-    let body = function.block;
+    let stmts = function.block.stmts;
     let message = format!(
         "\n\nERROR[no-panic]: detected panic in function `{}`\n",
         function.sig.ident,
@@ -170,7 +170,7 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
             #(
                 let #arg_pat = #arg_val;
             )*
-            #body
+            #(#stmts)*
         })();
         core::mem::forget(__guard);
         __result
