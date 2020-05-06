@@ -1,7 +1,7 @@
 \#\[no\_panic\]
 ===============
 
-[![Build Status](https://api.travis-ci.org/dtolnay/no-panic.svg?branch=master)](https://travis-ci.org/dtolnay/no-panic)
+[![Build Status](https://img.shields.io/github/workflow/status/dtolnay/no-panic/CI/master)](https://github.com/dtolnay/no-panic/actions?query=branch%3Amaster)
 [![Latest Version](https://img.shields.io/crates/v/no-panic.svg)](https://crates.io/crates/no-panic)
 
 A Rust attribute macro to require that the compiler prove a function can't ever
