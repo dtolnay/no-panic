@@ -65,6 +65,9 @@
 //!
 //! The error is not stellar but notice the ERROR\[no-panic\] part at the end
 //! that provides the name of the offending function.
+//! 
+//! In addition there is a no-op `may_panic` macro, which demonstrates to the 
+//! consumer that a given function may panic in certain situations.
 //!
 //! *Compiler support: requires rustc 1.31+*
 //!
@@ -201,4 +204,9 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
     }));
 
     TokenStream::from(quote!(#function))
+}
+
+#[proc_macro_attribute]
+pub fn may_panic(_args: TokenStream, function: TokenStream) -> TokenStream {
+    function
 }
