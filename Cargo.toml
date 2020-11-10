@@ -22,3 +22,17 @@ tempfile = "3.0"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
+
+[[example]]
+name = "bin"
+crate-type = ["bin"]
+
+[[example]]
+name = "lib"
+crate-type = ["lib"]
+
+[profile.dev]
+opt-level = 1
+
+[profile.test]
+opt-level = 1
