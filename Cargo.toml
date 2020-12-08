@@ -6,7 +6,7 @@ edition = "2018"
 license = "MIT OR Apache-2.0"
 description = "Attribute macro to require that the compiler prove a function can't ever panic."
 repository = "https://github.com/dtolnay/no-panic"
-documentation = "https://github.com/dtolnay/no-panic"
+documentation = "https://docs.rs/no-panic"
 readme = "README.md"
 
 [lib]
