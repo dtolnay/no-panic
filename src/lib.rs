@@ -119,6 +119,8 @@
 //! [Kixunil]: https://github.com/Kixunil
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
+#![allow(clippy::doc_markdown)]
+
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
