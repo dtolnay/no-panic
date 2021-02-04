@@ -119,7 +119,7 @@
 //! [Kixunil]: https://github.com/Kixunil
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
-#![allow(clippy::doc_markdown)]
+#![allow(clippy::doc_markdown, clippy::missing_panics_doc)]
 
 extern crate proc_macro;
 
