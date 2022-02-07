@@ -119,21 +119,27 @@ assert_no_panic! {
         }
     }
 
-    mod test_self_in_vec {
+    mod test_self_in_macro {
         struct S {
             data: usize,
         }
 
+        macro_rules! id {
+            ($expr:expr) => {
+                $expr
+            };
+        }
+
         impl S {
             #[no_panic]
-            fn get_mut(&mut self) -> Vec<usize> {
-                vec![self.data]
+            fn get_mut(&mut self) -> usize {
+                id![self.data]
             }
         }
 
         fn main() {
             let mut s = S { data: 0 };
-            println!("{}", s.get_mut()[0]);
+            println!("{}", s.get_mut());
         }
     }
 
