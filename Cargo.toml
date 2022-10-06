@@ -2,13 +2,13 @@
 name = "no-panic"
 version = "0.1.15"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
-edition = "2018"
-rust-version = "1.31"
-license = "MIT OR Apache-2.0"
 description = "Attribute macro to require that the compiler prove a function can't ever panic."
-repository = "https://github.com/dtolnay/no-panic"
 documentation = "https://docs.rs/no-panic"
+edition = "2018"
+license = "MIT OR Apache-2.0"
 readme = "README.md"
+repository = "https://github.com/dtolnay/no-panic"
+rust-version = "1.31"
 
 [lib]
 proc-macro = true
