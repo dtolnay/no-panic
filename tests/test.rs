@@ -1,6 +1,13 @@
 #[macro_use]
 mod compiletest;
 
+#[rustversion::attr(not(nightly), ignore)]
+#[test]
+fn ui() {
+    let t = trybuild::TestCases::new();
+    t.compile_fail("tests/ui/*.rs");
+}
+
 assert_no_panic! {
     mod test_readme {
         #[no_panic]
