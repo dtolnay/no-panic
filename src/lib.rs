@@ -124,17 +124,19 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
-use proc_macro2::Span;
+use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::quote;
 use syn::parse::Nothing;
 use syn::{parse_macro_input, parse_quote, Attribute, FnArg, Ident, ItemFn, PatType, ReturnType};
 
 #[proc_macro_attribute]
-pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
+pub fn no_panic(args: TokenStream, input: TokenStream) -> TokenStream {
     parse_macro_input!(args as Nothing);
+    let function = parse_macro_input!(input as ItemFn);
+    expand_no_panic(function).into()
+}
 
-    let mut function = parse_macro_input!(function as ItemFn);
-
+fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
     let mut move_self = None;
     let mut arg_pat = Vec::new();
     let mut arg_val = Vec::new();
@@ -203,5 +205,5 @@ pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
         __result
     }));
 
-    TokenStream::from(quote!(#function))
+    quote!(#function)
 }
