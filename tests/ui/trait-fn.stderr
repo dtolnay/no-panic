@@ -3,9 +3,3 @@ error: expected curly braces
   |
 5 |     fn f();
   |           ^
-
-error[E0407]: method `f` is not a member of trait `Trait`
- --> tests/ui/trait-fn.rs:9:5
-  |
-9 |     fn f() {}
-  |     ^^^^^^^^^ not a member of trait `Trait`
