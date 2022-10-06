@@ -126,11 +126,12 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use quote::quote;
+use syn::parse::Nothing;
 use syn::{parse_macro_input, parse_quote, Attribute, FnArg, Ident, ItemFn, PatType, ReturnType};
 
 #[proc_macro_attribute]
 pub fn no_panic(args: TokenStream, function: TokenStream) -> TokenStream {
-    assert!(args.is_empty());
+    parse_macro_input!(args as Nothing);
 
     let mut function = parse_macro_input!(function as ItemFn);
 
