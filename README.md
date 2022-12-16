@@ -4,7 +4,7 @@
 [<img alt="github" src="https://img.shields.io/badge/github-dtolnay/no--panic-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/dtolnay/no-panic)
 [<img alt="crates.io" src="https://img.shields.io/crates/v/no-panic.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/no-panic)
 [<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-no--panic-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs" height="20">](https://docs.rs/no-panic)
-[<img alt="build status" src="https://img.shields.io/github/workflow/status/dtolnay/no-panic/CI/master?style=for-the-badge" height="20">](https://github.com/dtolnay/no-panic/actions?query=branch%3Amaster)
+[<img alt="build status" src="https://img.shields.io/github/actions/workflow/status/dtolnay/no-panic/ci.yml?branch=master&style=for-the-badge" height="20">](https://github.com/dtolnay/no-panic/actions?query=branch%3Amaster)
 
 A Rust attribute macro to require that the compiler prove a function can't ever
 panic.
