@@ -1,6 +1,6 @@
 [package]
 name = "no-panic"
-version = "0.1.16"
+version = "0.1.17"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 description = "Attribute macro to require that the compiler prove a function can't ever panic."
 documentation = "https://docs.rs/no-panic"
