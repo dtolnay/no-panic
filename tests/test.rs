@@ -1,7 +1,7 @@
 #[macro_use]
 mod compiletest;
 
-#[rustversion::attr(not(nightly), ignore)]
+#[rustversion::attr(not(since(1.67.0)), ignore)]
 #[test]
 fn ui() {
     let t = trybuild::TestCases::new();
