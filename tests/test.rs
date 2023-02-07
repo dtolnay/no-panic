@@ -180,18 +180,18 @@ assert_no_panic! {
     }
 
     mod test_self_with_std_pin {
-        pub struct S {
-            data: usize,
-        }
+        use std::pin::Pin;
+
+        pub struct S;
 
         impl S {
             #[no_panic]
-            fn f1(mut self: std::pin::Pin<&mut Self>) { }
-
-            fn f2(mut self: std::pin::Pin<&mut Self>) { }
+            fn f(mut self: Pin<&mut Self>) {
+                let _ = self.as_mut();
+            }
         }
 
-        fn main() { }
+        fn main() {}
     }
 }
 
