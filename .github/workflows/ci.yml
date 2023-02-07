@@ -32,6 +32,17 @@ jobs:
           toolchain: ${{matrix.rust}}
       - run: cargo test
 
+  macos:
+    name: macOS
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo test
+
   msrv:
     name: Rust 1.31.0
     needs: pre_ci
