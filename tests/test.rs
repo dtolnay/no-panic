@@ -178,6 +178,21 @@ assert_no_panic! {
             println!("{}", s.get_mut());
         }
     }
+
+    mod test_self_with_std_pin {
+        use std::pin::Pin;
+
+        pub struct S;
+
+        impl S {
+            #[no_panic]
+            fn f(mut self: Pin<&mut Self>) {
+                let _ = self.as_mut();
+            }
+        }
+
+        fn main() {}
+    }
 }
 
 assert_link_error! {
