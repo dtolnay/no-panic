@@ -193,6 +193,26 @@ assert_no_panic! {
 
         fn main() {}
     }
+
+    mod test_async_await {
+        pub struct S;
+
+        async fn f1() {}
+
+        #[no_panic]
+        async fn f2() {
+            f1().await
+        }
+
+        impl S {
+            #[no_panic]
+            async fn f(&mut self) {
+                f1().await;
+            }
+        }
+
+        fn main() {}
+    }
 }
 
 assert_link_error! {
