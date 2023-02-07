@@ -126,7 +126,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::quote;
-use syn::parse::{Nothing, Result};
+use syn::parse::{Error, Nothing, Result};
 use syn::{parse_quote, Attribute, FnArg, Ident, ItemFn, Pat, PatType, ReturnType};
 
 #[proc_macro_attribute]
@@ -146,6 +146,12 @@ pub fn no_panic(args: TokenStream, input: TokenStream) -> TokenStream {
 fn parse(args: TokenStream2, input: TokenStream2) -> Result<ItemFn> {
     let function: ItemFn = syn::parse2(input)?;
     let _: Nothing = syn::parse2::<Nothing>(args)?;
+    if function.sig.asyncness.is_some() {
+        return Err(Error::new(
+            Span::call_site(),
+            "no_panic attribute on async fn is not supported",
+        ));
+    }
     Ok(function)
 }
 

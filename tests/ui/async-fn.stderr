@@ -1,0 +1,7 @@
+error: no_panic attribute on async fn is not supported
+ --> tests/ui/async-fn.rs:3:1
+  |
+3 | #[no_panic]
+  | ^^^^^^^^^^^
+  |
+  = note: this error originates in the attribute macro `no_panic` (in Nightly builds, run with -Z macro-backtrace for more info)
