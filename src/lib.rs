@@ -120,6 +120,7 @@
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
 #![allow(clippy::doc_markdown, clippy::missing_panics_doc)]
+#![cfg_attr(all(test, exhaustive), feature(non_exhaustive_omitted_patterns_lint))]
 
 extern crate proc_macro;
 
@@ -181,6 +182,8 @@ fn make_impl_trait_wild(ret: &mut Type) {
             }
         }
         Type::Tuple(ret) => ret.elems.iter_mut().for_each(make_impl_trait_wild),
+        Type::BareFn(_) | Type::Infer(_) | Type::Macro(_) | Type::Never(_) | Type::Verbatim(_) => {}
+        #[cfg_attr(all(test, exhaustive), deny(non_exhaustive_omitted_patterns))]
         _ => {}
     }
 }
