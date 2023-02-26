@@ -127,7 +127,7 @@ use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::quote;
 use syn::parse::{Error, Nothing, Result};
-use syn::{parse_quote, Attribute, FnArg, Ident, ItemFn, Pat, PatType};
+use syn::{parse_quote, Attribute, FnArg, Ident, ItemFn, Pat, PatType, ReturnType};
 
 #[proc_macro_attribute]
 pub fn no_panic(args: TokenStream, input: TokenStream) -> TokenStream {
@@ -195,6 +195,10 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
         function.attrs.push(parse_quote!(#[inline]));
     }
 
+    let ret = match &function.sig.output {
+        ReturnType::Default => quote!(-> ()),
+        output @ ReturnType::Type(..) => quote!(#output),
+    };
     let stmts = function.block.stmts;
     let message = format!(
         "\n\nERROR[no-panic]: detected panic in function `{}`\n",
@@ -214,7 +218,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
             }
         }
         let __guard = __NoPanic;
-        let __result = (move || {
+        let __result = (move || #ret {
             #move_self
             #(
                 let #arg_pat = #arg_val;
