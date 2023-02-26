@@ -205,7 +205,6 @@ fn make_impl_trait_wild_in_path(path: &mut Path) {
 }
 
 fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
-    let mut move_self = None;
     let mut arg_pat = Vec::new();
     let mut arg_val = Vec::new();
     for (i, input) in function.sig.inputs.iter_mut().enumerate() {
@@ -221,17 +220,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
                 arg_val.push(quote!(#numbered));
                 *pat = parse_quote!(mut #numbered);
             }
-            FnArg::Typed(_) | FnArg::Receiver(_) => {
-                move_self = Some(quote! {
-                    if false {
-                        loop {}
-                        #[allow(unreachable_code)]
-                        {
-                            let __self = self;
-                        }
-                    }
-                });
-            }
+            FnArg::Typed(_) | FnArg::Receiver(_) => {}
         }
     }
 
@@ -245,13 +234,14 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
     }
 
     let ret = match &function.sig.output {
-        ReturnType::Default => quote!(-> ()),
-        ReturnType::Type(arrow, output) => {
+        ReturnType::Default => quote!(()),
+        ReturnType::Type(_, output) => {
             let mut output = output.clone();
             make_impl_trait_wild(&mut output);
-            quote!(#arrow #output)
+            quote!(#output)
         }
     };
+
     let stmts = function.block.stmts;
     let message = format!(
         "\n\nERROR[no-panic]: detected panic in function `{}`\n",
@@ -271,13 +261,12 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
             }
         }
         let __guard = __NoPanic;
-        let __result = (move || #ret {
-            #move_self
+        let __result : #ret = {
             #(
                 let #arg_pat = #arg_val;
             )*
             #(#stmts)*
-        })();
+        };
         core::mem::forget(__guard);
         __result
     }));
