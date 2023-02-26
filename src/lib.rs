@@ -119,7 +119,11 @@
 //! [Kixunil]: https://github.com/Kixunil
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
-#![allow(clippy::doc_markdown, clippy::missing_panics_doc)]
+#![allow(
+    clippy::doc_markdown,
+    clippy::match_same_arms,
+    clippy::missing_panics_doc
+)]
 #![cfg_attr(all(test, exhaustive), feature(non_exhaustive_omitted_patterns_lint))]
 
 extern crate proc_macro;
