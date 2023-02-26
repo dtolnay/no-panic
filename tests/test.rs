@@ -193,6 +193,15 @@ assert_no_panic! {
 
         fn main() {}
     }
+
+    mod test_deref_coercion {
+        #[no_panic]
+        pub fn f(s: &str) -> &str {
+            &s
+        }
+
+        fn main() {}
+    }
 }
 
 assert_link_error! {
