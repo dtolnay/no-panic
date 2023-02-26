@@ -31,6 +31,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{matrix.rust}}
+      - name: Enable deny(non_exhaustive_omitted_patterns)
+        run: echo RUSTFLAGS=$(RUSTFLAGS)\ --cfg=exhaustive >> $GITHUB_ENV
+        if: matrix.rust == 'nightly'
       - name: Enable type layout randomization
         run: echo RUSTFLAGS=${RUSTFLAGS}\ -Zrandomize-layout >> $GITHUB_ENV
         if: matrix.rust == 'nightly'
