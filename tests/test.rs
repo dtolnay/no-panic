@@ -213,6 +213,13 @@ assert_no_panic! {
 
         fn main() {}
     }
+
+    mod test_const_fn {
+        #[no_panic]
+        pub const fn f() { }
+
+        fn main() {}
+    }
 }
 
 assert_link_error! {
