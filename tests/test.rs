@@ -202,6 +202,17 @@ assert_no_panic! {
 
         fn main() {}
     }
+
+    mod test_return_impl_trait {
+        use std::io;
+
+        #[no_panic]
+        pub fn f() -> io::Result<impl io::Write> {
+            Ok(Vec::new())
+        }
+
+        fn main() {}
+    }
 }
 
 assert_link_error! {
