@@ -213,6 +213,38 @@ assert_no_panic! {
 
         fn main() {}
     }
+
+    mod test_conditional_return {
+        #[no_panic]
+        pub fn f(i: i32) {
+            if i < 0 {
+                return;
+            }
+        }
+
+        fn main() {
+            println!("{:?}", f(-1));
+        }
+    }
+
+    mod test_conditional_return_macro {
+        macro_rules! return_if_negative {
+            ($e:expr) => {
+                if $e < 0 {
+                    return;
+                }
+            }
+        }
+
+        #[no_panic]
+        pub fn f(i: i32) {
+            return_if_negative!(i);
+        }
+
+        fn main() {
+            println!("{:?}", f(-1));
+        }
+    }
 }
 
 assert_link_error! {
