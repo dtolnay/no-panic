@@ -120,9 +120,9 @@
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
 #![allow(
-    clippy::doc_markdown,
-    clippy::match_same_arms,
-    clippy::missing_panics_doc
+clippy::doc_markdown,
+clippy::match_same_arms,
+clippy::missing_panics_doc
 )]
 #![cfg_attr(all(test, exhaustive), feature(non_exhaustive_omitted_patterns_lint))]
 
@@ -136,6 +136,7 @@ use syn::{
     parse_quote, Attribute, FnArg, GenericArgument, Ident, ItemFn, Pat, PatType, Path,
     PathArguments, ReturnType, Token, Type, TypeInfer, TypeParamBound,
 };
+use syn::spanned::Spanned;
 
 #[proc_macro_attribute]
 pub fn no_panic(args: TokenStream, input: TokenStream) -> TokenStream {
@@ -156,8 +157,8 @@ fn parse(args: TokenStream2, input: TokenStream2) -> Result<ItemFn> {
     let _: Nothing = syn::parse2::<Nothing>(args)?;
     if function.sig.asyncness.is_some() {
         return Err(Error::new(
-            Span::call_site(),
-            "no_panic attribute on async fn is not supported",
+            function.sig.asyncness.span(),
+            format!("no_panic attribute on async fn is not supported, but function '{}' is async!", function.sig.ident),
         ));
     }
     Ok(function)
@@ -212,15 +213,15 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
         let numbered = Ident::new(&format!("__arg{}", i), Span::call_site());
         match input {
             FnArg::Typed(PatType { pat, .. })
-                if match pat.as_ref() {
-                    Pat::Ident(pat) => pat.ident != "self",
-                    _ => true,
-                } =>
-            {
-                arg_pat.push(quote!(#pat));
-                arg_val.push(quote!(#numbered));
-                *pat = parse_quote!(mut #numbered);
-            }
+            if match pat.as_ref() {
+                Pat::Ident(pat) => pat.ident != "self",
+                _ => true,
+            } =>
+                {
+                    arg_pat.push(quote!(#pat));
+                    arg_val.push(quote!(#numbered));
+                    *pat = parse_quote!(mut #numbered);
+                }
             FnArg::Typed(_) | FnArg::Receiver(_) => {
                 move_self = Some(quote! {
                     if false {
