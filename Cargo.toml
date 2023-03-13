@@ -7,7 +7,7 @@ documentation = "https://docs.rs/no-panic"
 edition = "2018"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/no-panic"
-rust-version = "1.31"
+rust-version = "1.56"
 
 [lib]
 proc-macro = true
@@ -15,7 +15,7 @@ proc-macro = true
 [dependencies]
 proc-macro2 = "1.0"
 quote = "1.0"
-syn = { version = "1.0", features = ["full"] }
+syn = { version = "2.0", features = ["full"] }
 
 [dev-dependencies]
 rustversion = "1.0.9"
