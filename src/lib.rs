@@ -134,8 +134,8 @@ use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::quote;
 use syn::parse::{Error, Nothing, Result};
 use syn::{
-    parse_quote, Attribute, FnArg, GenericArgument, Ident, ItemFn, Pat, PatType, Path,
-    PathArguments, ReturnType, Token, Type, TypeInfer, TypeParamBound,
+    parse_quote, FnArg, GenericArgument, Ident, ItemFn, Pat, PatType, Path, PathArguments,
+    ReturnType, Token, Type, TypeInfer, TypeParamBound,
 };
 
 #[proc_macro_attribute]
@@ -239,8 +239,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
     let has_inline = function
         .attrs
         .iter()
-        .flat_map(Attribute::parse_meta)
-        .any(|meta| meta.path().is_ident("inline"));
+        .any(|attr| attr.path().is_ident("inline"));
     if !has_inline {
         function.attrs.push(parse_quote!(#[inline]));
     }
