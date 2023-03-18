@@ -119,7 +119,7 @@
 //! [Kixunil]: https://github.com/Kixunil
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
-#![doc(html_root_url = "https://docs.rs/no-panic/0.1.21")]
+#![doc(html_root_url = "https://docs.rs/no-panic/0.1.22")]
 #![allow(
     clippy::doc_markdown,
     clippy::match_same_arms,
