@@ -58,8 +58,6 @@ _panic_demo..demo..__NoPanic$u20$as$u20$core..ops..drop..Drop$GT$4drop17h72f8f42
 The error is not stellar but notice the ERROR\[no-panic\] part at the end that
 provides the name of the offending function.
 
-*Compiler support: requires rustc 1.31+*
-
 <br>
 
 ### Caveats

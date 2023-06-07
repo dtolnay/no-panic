@@ -66,8 +66,6 @@
 //! The error is not stellar but notice the ERROR\[no-panic\] part at the end
 //! that provides the name of the offending function.
 //!
-//! *Compiler support: requires rustc 1.31+*
-//!
 //! <br>
 //!
 //! ## Caveats
