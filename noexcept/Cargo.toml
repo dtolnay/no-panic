@@ -1,0 +1,15 @@
+[package]
+name = "noexcept"
+version = "0.0.0"
+authors = ["David Tolnay <dtolnay@gmail.com>"]
+description = "Attribute macro equivalent to C++'s noexcept specifier"
+documentation = "https://docs.rs/noexcept"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/dtolnay/no-panic"
+
+[dependencies]
+noexcept-impl = { version = "0.0.0", path = "../noexcept-impl" }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]

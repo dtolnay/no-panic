@@ -24,3 +24,6 @@ trybuild = { version = "1.0.69", features = ["diff"] }
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
+
+[workspace]
+members = ["noexcept", "noexcept-impl"]
