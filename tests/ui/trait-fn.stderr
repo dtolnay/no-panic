@@ -1,9 +1,5 @@
 error: expected curly braces
  --> tests/ui/trait-fn.rs:5:11
   |
-4 |     #[no_panic]
-  |     ----------- in this procedural macro expansion
 5 |     fn f();
   |           ^
-  |
-  = note: this error originates in the attribute macro `no_panic` (in Nightly builds, run with -Z macro-backtrace for more info)
