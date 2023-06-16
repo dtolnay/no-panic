@@ -1,7 +1,8 @@
 #![allow(
     clippy::doc_markdown,
     clippy::match_same_arms,
-    clippy::missing_panics_doc
+    clippy::missing_panics_doc,
+    clippy::uninlined_format_args
 )]
 #![cfg_attr(all(test, exhaustive), feature(non_exhaustive_omitted_patterns_lint))]
 
