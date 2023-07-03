@@ -2,6 +2,7 @@
 name = "no-panic"
 version = "0.1.23"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+categories = ["no-std", "no-std::no-alloc"]
 description = "Attribute macro to require that the compiler prove a function can't ever panic."
 documentation = "https://docs.rs/no-panic"
 edition = "2018"

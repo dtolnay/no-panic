@@ -2,6 +2,7 @@
 name = "noexcept"
 version = "0.0.1"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+categories = ["no-std", "no-std::no-alloc"]
 description = "Attribute macro equivalent to C++'s noexcept specifier"
 documentation = "https://docs.rs/noexcept"
 edition = "2021"
