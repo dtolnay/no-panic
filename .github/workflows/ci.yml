@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.56.0]
+        rust: [nightly, beta, stable, 1.63.0]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v3
@@ -59,6 +59,17 @@ jobs:
       - name: Enable type layout randomization
         run: echo RUSTFLAGS=${RUSTFLAGS}\ -Zrandomize-layout >> $GITHUB_ENV
       - run: cargo test
+
+  msrv:
+    name: Rust 1.56.0
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@1.56.0
+      - run: cargo build
 
   minimal:
     name: Minimal versions
