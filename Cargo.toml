@@ -1,6 +1,6 @@
 [package]
 name = "no-panic"
-version = "0.1.25"
+version = "0.1.26"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["no-std", "no-std::no-alloc"]
 description = "Attribute macro to require that the compiler prove a function can't ever panic."
