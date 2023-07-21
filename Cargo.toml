@@ -25,6 +25,7 @@ trybuild = { version = "1.0.81", features = ["diff"] }
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
+rustdoc-args = ["--generate-link-to-definition"]
 
 [workspace]
 members = ["noexcept", "noexcept-impl"]
