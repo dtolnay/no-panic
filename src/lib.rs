@@ -165,6 +165,7 @@ fn parse(args: TokenStream2, input: TokenStream2) -> Result<ItemFn> {
 // Convert `Path<impl Trait>` to `Path<_>`
 fn make_impl_trait_wild(ret: &mut Type) {
     match ret {
+        #![cfg_attr(all(test, exhaustive), deny(non_exhaustive_omitted_patterns))]
         Type::ImplTrait(impl_trait) => {
             *ret = Type::Infer(TypeInfer {
                 underscore_token: Token![_](impl_trait.impl_token.span),
@@ -186,7 +187,6 @@ fn make_impl_trait_wild(ret: &mut Type) {
         }
         Type::Tuple(ret) => ret.elems.iter_mut().for_each(make_impl_trait_wild),
         Type::BareFn(_) | Type::Infer(_) | Type::Macro(_) | Type::Never(_) | Type::Verbatim(_) => {}
-        #[cfg_attr(all(test, exhaustive), deny(non_exhaustive_omitted_patterns))]
         _ => {}
     }
 }
