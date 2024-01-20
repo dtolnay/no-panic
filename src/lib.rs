@@ -100,6 +100,15 @@
 //! lto = "thin"
 //! ```
 //!
+//! If thin LTO isn't cutting it, the next thing to try would be fat LTO with a
+//! single codegen unit:
+//!
+//! ```toml
+//! [profile.release]
+//! lto = "fat"
+//! codegen-units = 1
+//! ```
+//!
 //! If you want no_panic to just assume that some function you call doesn't
 //! panic, and get Undefined Behavior if it does at runtime, see
 //! [dtolnay/no-panic#16]; try wrapping that call in an `unsafe extern "C"`
