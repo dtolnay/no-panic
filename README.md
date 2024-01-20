@@ -91,6 +91,15 @@ enabled for the linker to deduce those do not panic.
 lto = "thin"
 ```
 
+If thin LTO doesn't work, the next step would be to try fat LTO with a single
+codegen unit:
+
+```toml
+[profile.release]
+lto = "fat"
+codegen-units = 1
+```
+
 If you want no\_panic to just assume that some function you call doesn't panic,
 and get Undefined Behavior if it does at runtime, see [dtolnay/no-panic#16]; try
 wrapping that call in an `unsafe extern "C"` wrapper.
