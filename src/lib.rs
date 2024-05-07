@@ -127,6 +127,7 @@
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
 #![doc(html_root_url = "https://docs.rs/no-panic/0.1.29")]
+#![cfg_attr(not(check_cfg), allow(unexpected_cfgs))]
 #![allow(
     clippy::doc_markdown,
     clippy::match_same_arms,

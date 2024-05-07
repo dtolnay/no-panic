@@ -1,3 +1,4 @@
+#![cfg_attr(not(check_cfg), allow(unexpected_cfgs))]
 #![allow(
     clippy::doc_markdown,
     clippy::match_same_arms,

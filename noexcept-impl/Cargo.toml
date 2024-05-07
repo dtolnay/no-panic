@@ -4,6 +4,7 @@ version = "0.0.2"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 description = "Implementation detail of the `noexcept` crate"
 edition = "2021"
+exclude = ["build.rs"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/no-panic"
 
