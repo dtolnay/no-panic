@@ -6,7 +6,6 @@ categories = ["no-std", "no-std::no-alloc"]
 description = "Attribute macro to require that the compiler prove a function can't ever panic."
 documentation = "https://docs.rs/no-panic"
 edition = "2021"
-exclude = ["build.rs"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/no-panic"
 rust-version = "1.56"
