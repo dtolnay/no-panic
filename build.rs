@@ -12,6 +12,12 @@ fn main() {
 
     if rustc >= 80 {
         println!("cargo:rustc-check-cfg=cfg(exhaustive)");
+        println!("cargo:rustc-check-cfg=cfg(no_unsafe_extern_blocks)");
+    }
+
+    if rustc < 82 {
+        // https://blog.rust-lang.org/2024/10/17/Rust-1.82.0.html#safe-items-with-unsafe-extern
+        println!("cargo:rustc-cfg=no_unsafe_extern_blocks");
     }
 }
 

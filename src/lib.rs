@@ -264,9 +264,14 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
         "\n\nERROR[no-panic]: detected panic in function `{}`\n",
         function.sig.ident,
     );
+    let unsafe_extern = if cfg!(no_unsafe_extern_blocks) {
+        None
+    } else {
+        Some(Token![unsafe](Span::call_site()))
+    };
     function.block = Box::new(parse_quote!({
         struct __NoPanic;
-        extern "C" {
+        #unsafe_extern extern "C" {
             #[link_name = #message]
             fn trigger() -> !;
         }
