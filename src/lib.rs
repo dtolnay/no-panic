@@ -127,7 +127,6 @@
 //! [`dont_panic`]: https://github.com/Kixunil/dont_panic
 
 #![doc(html_root_url = "https://docs.rs/no-panic/0.1.30")]
-#![cfg_attr(not(check_cfg), allow(unexpected_cfgs))]
 #![allow(
     clippy::doc_markdown,
     clippy::match_same_arms,
@@ -265,9 +264,14 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
         "\n\nERROR[no-panic]: detected panic in function `{}`\n",
         function.sig.ident,
     );
+    let unsafe_extern = if cfg!(no_unsafe_extern_blocks) {
+        None
+    } else {
+        Some(Token![unsafe](Span::call_site()))
+    };
     function.block = Box::new(parse_quote!({
         struct __NoPanic;
-        extern "C" {
+        #unsafe_extern extern "C" {
             #[link_name = #message]
             fn trigger() -> !;
         }
