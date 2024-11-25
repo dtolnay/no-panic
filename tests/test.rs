@@ -46,9 +46,7 @@ assert_no_panic!({
         }
 
         fn main() {
-            let mut buffer = Buffer {
-                bytes: [0u8; 24],
-            };
+            let mut buffer = Buffer { bytes: [0u8; 24] };
             println!("{:?}", demo(&mut buffer));
         }
     }
@@ -66,9 +64,7 @@ assert_no_panic!({
         }
 
         fn main() {
-            let mut buffer = Buffer {
-                bytes: [0u8; 24],
-            };
+            let mut buffer = Buffer { bytes: [0u8; 24] };
             println!("{:?}", buffer.demo(""));
         }
     }
@@ -233,7 +229,7 @@ assert_no_panic!({
                 if $e < 0 {
                     return;
                 }
-            }
+            };
         }
 
         #[no_panic]
