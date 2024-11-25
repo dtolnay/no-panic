@@ -45,6 +45,8 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
             prefix = std::env::consts::DLL_PREFIX,
             extension = std::env::consts::DLL_EXTENSION,
         ))
+        .arg("-D")
+        .arg("warnings")
         .status()
         .expect("failed to execute rustc");
     assert!(status.success());
