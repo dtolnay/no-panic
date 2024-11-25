@@ -275,7 +275,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
             #[link_name = #message]
             fn trigger() -> !;
         }
-        impl core::ops::Drop for __NoPanic {
+        impl ::core::ops::Drop for __NoPanic {
             fn drop(&mut self) {
                 unsafe {
                     trigger();
@@ -290,7 +290,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
             )*
             #(#stmts)*
         })();
-        core::mem::forget(__guard);
+        ::core::mem::forget(__guard);
         __result
     }));
 

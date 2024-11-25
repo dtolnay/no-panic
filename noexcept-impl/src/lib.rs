@@ -124,7 +124,7 @@ fn expand_abort_on_panic(mut function: ItemFn) -> TokenStream2 {
     };
     let stmts = function.block.stmts;
     function.block = Box::new(parse_quote!({
-        let __guard = noexcept::__private::AbortOnDrop;
+        let __guard = ::noexcept::__private::AbortOnDrop;
         let __result = (move || #ret {
             #move_self
             #(
@@ -132,7 +132,7 @@ fn expand_abort_on_panic(mut function: ItemFn) -> TokenStream2 {
             )*
             #(#stmts)*
         })();
-        core::mem::forget(__guard);
+        ::core::mem::forget(__guard);
         __result
     }));
 
