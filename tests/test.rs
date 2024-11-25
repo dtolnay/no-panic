@@ -8,7 +8,7 @@ fn ui() {
     t.compile_fail("tests/ui/*.rs");
 }
 
-assert_no_panic! {
+assert_no_panic!({
     mod test_readme {
         #[no_panic]
         fn demo(s: &str) -> &str {
@@ -245,9 +245,9 @@ assert_no_panic! {
             println!("{:?}", f(-1));
         }
     }
-}
+});
 
-assert_link_error! {
+assert_link_error!({
     mod test_readme {
         #[no_panic]
         fn demo(s: &str) -> &str {
@@ -258,4 +258,4 @@ assert_link_error! {
             println!("{}", demo("\u{1f980}input string"));
         }
     }
-}
+});

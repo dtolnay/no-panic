@@ -49,7 +49,7 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
 }
 
 macro_rules! assert_no_panic {
-    ($(mod $name:ident { $($content:tt)* })*) => {
+    ({ $(mod $name:ident { $($content:tt)* })* }) => {
         mod no_panic {
             use crate::compiletest;
             $(
@@ -66,7 +66,7 @@ macro_rules! assert_no_panic {
 }
 
 macro_rules! assert_link_error {
-    ($(mod $name:ident { $($content:tt)* })*) => {
+    ({ $(mod $name:ident { $($content:tt)* })* }) => {
         mod link_error {
             use crate::compiletest;
             $(
