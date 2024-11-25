@@ -1,4 +1,5 @@
 use std::fs;
+use std::io;
 use std::process::Command;
 use std::sync::Once;
 
@@ -14,13 +15,18 @@ pub fn setup() {
 }
 
 pub fn contains_panic(name: &str, code: &str) -> bool {
-    let tempdir = tempfile::tempdir().unwrap();
+    let tempdir = scratch::path("no-panic").join(name);
+    match fs::create_dir(&tempdir) {
+        Ok(()) => {}
+        Err(err) if err.kind() == io::ErrorKind::AlreadyExists => {}
+        err @ Err(_) => err.unwrap(),
+    }
 
     let prelude = stringify! {
         use no_panic::no_panic;
     };
 
-    let rs = tempdir.path().join(format!("{}.rs", name));
+    let rs = tempdir.join(format!("{}.rs", name));
     fs::write(&rs, format!("{}{}", prelude, code)).unwrap();
 
     let status = Command::new("rustc")
@@ -32,7 +38,7 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
         .arg("opt-level=3")
         .arg("--emit=asm")
         .arg("--out-dir")
-        .arg(tempdir.path())
+        .arg(&tempdir)
         .arg("--extern")
         .arg(format!(
             "no_panic=target/debug/{prefix}no_panic.{extension}",
@@ -43,7 +49,7 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
         .expect("failed to execute rustc");
     assert!(status.success());
 
-    let asm = tempdir.path().join(format!("{}.s", name));
+    let asm = tempdir.join(format!("{}.s", name));
     let asm = fs::read_to_string(asm).unwrap();
     asm.contains("detected panic in function")
 }

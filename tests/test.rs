@@ -244,7 +244,7 @@ assert_no_panic![
 ];
 
 assert_link_error![
-    mod test_readme {
+    mod test_readme_bad {
         #[no_panic]
         fn demo(s: &str) -> &str {
             &s[1..]
