@@ -1,6 +1,6 @@
 [package]
 name = "noexcept-impl"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 description = "Implementation detail of the `noexcept` crate"
 edition = "2021"
