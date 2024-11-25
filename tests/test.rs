@@ -161,7 +161,7 @@ assert_no_panic![
             #[no_panic]
             fn get_mut(&mut self) -> usize {
                 let _ = emit!({
-                    #[allow(non_local_definitions)]
+                    #[allow(unknown_lints, non_local_definitions)]
                     impl S {
                         pub fn f(self) {}
                     }
