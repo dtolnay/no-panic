@@ -79,7 +79,9 @@
 //!   detection. This includes `cargo build` of library crates and `cargo check`
 //!   of binary and library crates.
 //!
-//! - The attribute is useless in code built with `panic = "abort"`.
+//! - The attribute is useless in code built with `panic = "abort"`. Code must
+//!   be built with `panic = "unwind"` (the default) in order for any panics to
+//!   be detected.
 //!
 //! If you find that code requires optimization to pass `#[no_panic]`, either
 //! make no-panic an optional dependency that you only enable in release builds,
