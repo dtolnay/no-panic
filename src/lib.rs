@@ -84,6 +84,9 @@
 //!   be detected. After confirming absence of panics, you can of course still
 //!   ship your software as a `panic = "abort"` build.
 //!
+//! - Const functions are not supported. The attribute will fail to compile if
+//!   placed on a `const fn`.
+//!
 //! If you find that code requires optimization to pass `#[no_panic]`, either
 //! make no-panic an optional dependency that you only enable in release builds,
 //! or add a section like the following to your Cargo.toml or .cargo/config.toml
