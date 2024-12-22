@@ -72,7 +72,8 @@ provides the name of the offending function.
 
 - The attribute is useless in code built with `panic = "abort"`. Code must be
   built with `panic = "unwind"` (the default) in order for any panics to be
-  detected.
+  detected. After confirming absence of panics, you can of course still ship
+  your software as a `panic = "abort"` build.
 
 If you find that code requires optimization to pass `#[no_panic]`, either make
 no-panic an optional dependency that you only enable in release builds, or add a
