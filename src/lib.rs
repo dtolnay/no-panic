@@ -155,14 +155,25 @@ use syn::{
 pub fn no_panic(args: TokenStream, input: TokenStream) -> TokenStream {
     let args = TokenStream2::from(args);
     let input = TokenStream2::from(input);
-    let expanded = match parse(args, input.clone()) {
-        Ok(function) => expand_no_panic(function),
+    TokenStream::from(match parse(args, input.clone()) {
+        Ok(function) => {
+            let expanded = expand_no_panic(function);
+            quote! {
+                #[cfg(not(doc))]
+                #expanded
+                // Keep generated parameter names out of doc builds.
+                #[cfg(doc)]
+                #input
+            }
+        }
         Err(parse_error) => {
             let compile_error = parse_error.to_compile_error();
-            quote!(#compile_error #input)
+            quote! {
+                #compile_error
+                #input
+            }
         }
-    };
-    TokenStream::from(expanded)
+    })
 }
 
 fn parse(args: TokenStream2, input: TokenStream2) -> Result<ItemFn> {
