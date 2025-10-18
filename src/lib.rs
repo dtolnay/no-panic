@@ -297,7 +297,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
     } else {
         Some(Token![unsafe](Span::call_site()))
     };
-    function.block = Box::new(parse_quote!({
+    *function.block = parse_quote!({
         struct __NoPanic;
         #unsafe_extern extern "C" {
             #[link_name = #message]
@@ -320,7 +320,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
         })();
         ::core::mem::forget(__guard);
         __result
-    }));
+    });
 
     quote!(#function)
 }
