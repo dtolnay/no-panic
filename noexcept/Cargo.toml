@@ -8,6 +8,7 @@ documentation = "https://docs.rs/noexcept"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/no-panic"
+rust-version = "1.68"
 
 [dependencies]
 noexcept-impl = { version = "0.0.4", path = "../noexcept-impl" }
