@@ -146,6 +146,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use proc_macro2::{Span, TokenStream as TokenStream2};
 use quote::quote;
+use std::mem;
 use syn::parse::{Error, Nothing, Result};
 use syn::{
     parse_quote, FnArg, GenericArgument, Ident, ItemFn, Pat, PatType, Path, PathArguments,
@@ -255,9 +256,8 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
                     Ident::new(&format!("__arg{}", i), Span::call_site())
                 };
                 arg_attrs.push(attrs);
-                arg_pat.push(quote!(#pat));
-                arg_val.push(quote!(#arg_name));
-                *pat = parse_quote!(mut #arg_name);
+                arg_pat.push(mem::replace(&mut *pat, parse_quote!(mut #arg_name)));
+                arg_val.push(arg_name);
             }
             FnArg::Typed(_) | FnArg::Receiver(_) => {
                 move_self = Some(quote! {
