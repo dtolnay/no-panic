@@ -238,11 +238,12 @@ fn make_impl_trait_wild_in_path(path: &mut Path) {
 
 fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
     let mut move_self = None;
+    let mut arg_attrs = Vec::new();
     let mut arg_pat = Vec::new();
     let mut arg_val = Vec::new();
     for (i, input) in function.sig.inputs.iter_mut().enumerate() {
         match input {
-            FnArg::Typed(PatType { pat, .. })
+            FnArg::Typed(PatType { attrs, pat, .. })
                 if match pat.as_ref() {
                     Pat::Ident(pat) => pat.ident != "self",
                     _ => true,
@@ -253,6 +254,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
                 } else {
                     Ident::new(&format!("__arg{}", i), Span::call_site())
                 };
+                arg_attrs.push(attrs);
                 arg_pat.push(quote!(#pat));
                 arg_val.push(quote!(#arg_name));
                 *pat = parse_quote!(mut #arg_name);
@@ -314,6 +316,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
         let __result = (move || #ret {
             #move_self
             #(
+                #(#arg_attrs)*
                 let #arg_pat = #arg_val;
             )*
             #(#stmts)*

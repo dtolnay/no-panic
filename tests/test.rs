@@ -244,6 +244,14 @@ assert_no_panic![
             println!("{:?}", f(-1));
         }
     }
+
+    mod test_argument_attribute {
+        #[deny(unused_variables)]
+        #[no_panic]
+        pub fn f(#[allow(unused_variables)] arg: i32) {}
+
+        fn main() {}
+    }
 ];
 
 assert_link_error![
