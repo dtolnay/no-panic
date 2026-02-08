@@ -7,7 +7,7 @@ edition = "2021"
 exclude = ["build.rs"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/no-panic"
-rust-version = "1.68"
+rust-version = "1.71"
 
 [lib]
 proc-macro = true
