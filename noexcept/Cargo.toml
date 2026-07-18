@@ -1,6 +1,6 @@
 [package]
 name = "noexcept"
-version = "0.0.4"
+version = "0.0.5"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["no-std", "no-std::no-alloc"]
 description = "Attribute macro equivalent to C++'s noexcept specifier"
@@ -11,7 +11,7 @@ repository = "https://github.com/dtolnay/no-panic"
 rust-version = "1.71"
 
 [dependencies]
-noexcept-impl = { version = "0.0.4", path = "../noexcept-impl" }
+noexcept-impl = { version = "0.0.5", path = "../noexcept-impl" }
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
