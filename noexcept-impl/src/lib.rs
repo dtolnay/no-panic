@@ -48,6 +48,7 @@ fn make_impl_trait_wild(ret: &mut Type) {
         #![cfg_attr(all(test, exhaustive), deny(non_exhaustive_omitted_patterns))]
         Type::ImplTrait(impl_trait) => {
             *ret = Type::Infer(TypeInfer {
+                attrs: Vec::new(),
                 underscore_token: Token![_](impl_trait.impl_token.span),
             });
         }
@@ -66,7 +67,7 @@ fn make_impl_trait_wild(ret: &mut Type) {
             }
         }
         Type::Tuple(ret) => ret.elems.iter_mut().for_each(make_impl_trait_wild),
-        Type::BareFn(_) | Type::Infer(_) | Type::Macro(_) | Type::Never(_) | Type::Verbatim(_) => {}
+        Type::FnPtr(_) | Type::Infer(_) | Type::Macro(_) | Type::Never(_) | Type::Verbatim(_) => {}
         _ => {}
     }
 }
