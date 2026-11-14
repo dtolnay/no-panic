@@ -14,7 +14,7 @@ pub fn setup() {
     });
 }
 
-pub fn contains_panic(name: &str, code: &str) -> bool {
+pub fn contains_panic(name: &str, edition: &str, code: &str) -> bool {
     let tempdir = scratch::path("no-panic").join(name);
     match fs::create_dir(&tempdir) {
         Ok(()) => {}
@@ -33,7 +33,7 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
         .arg("--crate-name")
         .arg(name)
         .arg(rs)
-        .arg("--edition=2018")
+        .arg(format!("--edition={}", edition))
         .arg("-C")
         .arg("opt-level=3")
         .arg("--emit=asm")
@@ -56,8 +56,17 @@ pub fn contains_panic(name: &str, code: &str) -> bool {
     asm.contains("detected panic in function")
 }
 
+macro_rules! edition {
+    () => {
+        "2024"
+    };
+    ($edition:literal) => {
+        $edition
+    };
+}
+
 macro_rules! assert_no_panic {
-    ($(mod $name:ident { $($content:tt)* })*) => {
+    ($($(#[edition = $edition:literal])? mod $name:ident { $($content:tt)* })*) => {
         mod no_panic {
             use crate::compiletest;
             $(
@@ -65,8 +74,9 @@ macro_rules! assert_no_panic {
                 fn $name() {
                     compiletest::setup();
                     let name = stringify!($name);
+                    let edition = edition!($($edition)?);
                     let content = stringify!($($content)*);
-                    assert!(!compiletest::contains_panic(name, content));
+                    assert!(!compiletest::contains_panic(name, edition, content));
                 }
             )*
         }
@@ -74,7 +84,7 @@ macro_rules! assert_no_panic {
 }
 
 macro_rules! assert_link_error {
-    ($(mod $name:ident { $($content:tt)* })*) => {
+    ($($(#[edition = $edition:literal])? mod $name:ident { $($content:tt)* })*) => {
         mod link_error {
             use crate::compiletest;
             $(
@@ -82,8 +92,9 @@ macro_rules! assert_link_error {
                 fn $name() {
                     compiletest::setup();
                     let name = stringify!($name);
+                    let edition = edition!($($edition)?);
                     let content = stringify!($($content)*);
-                    assert!(compiletest::contains_panic(name, content));
+                    assert!(compiletest::contains_panic(name, edition, content));
                 }
             )*
         }
