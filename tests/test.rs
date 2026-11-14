@@ -245,6 +245,81 @@ assert_no_panic![
         }
     }
 
+    mod test_tail_expr_temporary {
+        struct Guard<'a>(&'a [u8]);
+
+        impl Drop for Guard<'_> {
+            fn drop(&mut self) {}
+        }
+
+        fn len(guard: &Guard<'_>) -> usize {
+            guard.0.len()
+        }
+
+        #[no_panic]
+        fn demo() -> usize {
+            let bytes = [0u8; 4];
+            len(&Guard(&bytes))
+        }
+
+        fn main() {
+            println!("{}", demo());
+        }
+    }
+
+    mod test_tail_expr_temporary_borrowing_argument {
+        struct Guard<'a>(&'a [u8]);
+
+        impl Drop for Guard<'_> {
+            fn drop(&mut self) {}
+        }
+
+        fn len(guard: &Guard<'_>) -> usize {
+            guard.0.len()
+        }
+
+        #[no_panic]
+        fn demo(bytes: [u8; 4]) -> usize {
+            len(&Guard(&bytes))
+        }
+
+        fn main() {
+            println!("{}", demo([0; 4]));
+        }
+    }
+
+    #[edition = "2021"]
+    mod test_tail_expr_temporary_edition_2021 {
+        struct Value(u8);
+
+        impl Drop for Value {
+            fn drop(&mut self) {}
+        }
+
+        struct Holder<'a>(Option<&'a Value>);
+
+        impl Drop for Holder<'_> {
+            fn drop(&mut self) {}
+        }
+
+        impl<'a> Holder<'a> {
+            fn set(&mut self, value: &'a Value) -> u8 {
+                self.0 = Some(value);
+                value.0
+            }
+        }
+
+        #[no_panic]
+        fn demo() -> u8 {
+            let mut holder = Holder(None);
+            holder.set(&Value(1))
+        }
+
+        fn main() {
+            println!("{}", demo());
+        }
+    }
+
     mod test_argument_attribute {
         #[deny(unused_variables)]
         #[no_panic]
