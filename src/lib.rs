@@ -290,7 +290,7 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
             quote!(#arrow #output)
         }
     };
-    let stmts = function.block.stmts;
+    let block = *function.block;
     let message = format!(
         "\n\nERROR[no-panic]: detected panic in function `{}`\n",
         function.sig.ident,
@@ -314,13 +314,14 @@ fn expand_no_panic(mut function: ItemFn) -> TokenStream2 {
             }
         }
         let __guard = __NoPanic;
+        #[allow(unused_braces)]
         let __result = (move || #ret {
             #move_self
             #(
                 #(#arg_attrs)*
                 let #arg_pat = #arg_val;
             )*
-            #(#stmts)*
+            #block
         })();
         ::core::mem::forget(__guard);
         __result
